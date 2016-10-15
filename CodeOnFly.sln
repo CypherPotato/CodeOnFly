@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeOnFly", "CodeOnFly\CodeOnFly.vbproj", "{30A4C169-D9CE-4BF9-9A8D-D0629A417043}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeOnFlyCore", "CodeOnFlyCore\CodeOnFlyCore.vbproj", "{27DA7BFA-51E3-4E99-B778-9737F1A61426}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Serializer", "Serializer\Serializer.vbproj", "{759F0239-274F-4125-9FA2-B9D7D10A68A6}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Tester", "Tester\Tester.vbproj", "{5D897932-6FDB-478C-88F9-81DEF687B530}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeOnFly Interactive", "CodeOnFly Interactive\CodeOnFly Interactive.vbproj", "{29FA83DB-A985-4AFD-ACC6-02F7B01169D3}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeOnFly Setup", "CodeOnFly Setup\CodeOnFly Setup.vbproj", "{0EFA3D47-8BB3-4892-A09B-0538A1D0D28E}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeOnFly Header", "CodeOnFly Header\CodeOnFly Header.vbproj", "{DD4002AB-8C89-4D38-B46A-9D34E1AA433B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30A4C169-D9CE-4BF9-9A8D-D0629A417043}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30A4C169-D9CE-4BF9-9A8D-D0629A417043}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30A4C169-D9CE-4BF9-9A8D-D0629A417043}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30A4C169-D9CE-4BF9-9A8D-D0629A417043}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27DA7BFA-51E3-4E99-B778-9737F1A61426}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27DA7BFA-51E3-4E99-B778-9737F1A61426}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27DA7BFA-51E3-4E99-B778-9737F1A61426}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27DA7BFA-51E3-4E99-B778-9737F1A61426}.Release|Any CPU.Build.0 = Release|Any CPU
+		{759F0239-274F-4125-9FA2-B9D7D10A68A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{759F0239-274F-4125-9FA2-B9D7D10A68A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{759F0239-274F-4125-9FA2-B9D7D10A68A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{759F0239-274F-4125-9FA2-B9D7D10A68A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D897932-6FDB-478C-88F9-81DEF687B530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D897932-6FDB-478C-88F9-81DEF687B530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D897932-6FDB-478C-88F9-81DEF687B530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D897932-6FDB-478C-88F9-81DEF687B530}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29FA83DB-A985-4AFD-ACC6-02F7B01169D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29FA83DB-A985-4AFD-ACC6-02F7B01169D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29FA83DB-A985-4AFD-ACC6-02F7B01169D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29FA83DB-A985-4AFD-ACC6-02F7B01169D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EFA3D47-8BB3-4892-A09B-0538A1D0D28E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EFA3D47-8BB3-4892-A09B-0538A1D0D28E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EFA3D47-8BB3-4892-A09B-0538A1D0D28E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EFA3D47-8BB3-4892-A09B-0538A1D0D28E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD4002AB-8C89-4D38-B46A-9D34E1AA433B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD4002AB-8C89-4D38-B46A-9D34E1AA433B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD4002AB-8C89-4D38-B46A-9D34E1AA433B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD4002AB-8C89-4D38-B46A-9D34E1AA433B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
