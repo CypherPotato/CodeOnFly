@@ -3,11 +3,17 @@
 Public Class Generator
     Implements IDisposable
 
-    Public Shared Function IsValidName(ByVal name As String) As Boolean
+    Public Shared Function IsValidName(ByVal name As String, Optional includeDot As Boolean = False) As Boolean
         For Each c As Char In name.ToCharArray
             Select Case c
                 Case "a" To "z", "A" To "Z", "0" To "9", "_"
                     'ok
+                Case "."
+                    If includeDot Then
+                        'ok
+                    Else
+                        Return False
+                    End If
                 Case Else
                     Return False
             End Select

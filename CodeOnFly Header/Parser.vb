@@ -6,7 +6,7 @@ Public Class Parser
             MyBase.New(message)
         End Sub
     End Class
-    Public Shared Function Parse(ByVal str As String) As Generator
+    Public Shared Function Parse(ByVal str As String, headerFilePath As String) As Generator
         Dim g As New Generator(ProgrammingLanguage.VisualBasic)
         Dim srcs As New List(Of String)
         Dim ref As New List(Of String)
@@ -33,6 +33,10 @@ Public Class Parser
                             g.Language = ProgrammingLanguage.VisualBasic
                         Case "2", "cs"
                             g.Language = ProgrammingLanguage.VisualCSharp
+                        Case "3", "vbr"
+                            g.Language = ProgrammingLanguage.VisualBasicRoslym
+                        Case "4", "csr"
+                            g.Language = ProgrammingLanguage.VisualCSharp
                         Case Else
                             Throw New ParserException("Invalid parser argument for 'lang' at line " & i + 1)
                     End Select
@@ -40,18 +44,19 @@ Public Class Parser
                 Case "file"
                     Dim Arg As String = Current.Substring(Len("file")).Trim
                     If Not IO.File.Exists(Arg) Then
-                        Throw New ParserException("Input file not found at line " & i + 1)
+                        If Not IO.File.Exists(IO.Path.GetDirectoryName(headerFilePath) & "\" & Arg) Then
+                            Throw New ParserException("Input file not found at line " & i + 1)
+                        Else
+                            Arg = IO.Path.GetDirectoryName(headerFilePath) & "\" & Arg
+                            srcs.Add(IO.File.ReadAllText(Arg))
+                        End If
                     Else
                         srcs.Add(IO.File.ReadAllText(Arg))
                     End If
 
                 Case "import"
                     Dim Arg As String = Current.Substring(Len("import")).Trim
-                    If Not IO.File.Exists(Arg) Then
-                        Throw New ParserException("Reference file not found at line " & i + 1)
-                    Else
-                        ref.Add(Arg)
-                    End If
+                    ref.Add(Arg)
 
                 Case "entry"
                     Dim Arg As String = Current.Substring(Len("entry")).Trim

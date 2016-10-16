@@ -8,17 +8,17 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("CodeOnFly Setup")>
-<Assembly: AssemblyDescription("Installs CodeOnFly")>
+<Assembly: AssemblyTitle("CodeOnFly Uninstaller")>
+<Assembly: AssemblyDescription("")>
 <Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("CodeOnFly Setup")>
+<Assembly: AssemblyProduct("CodeOnFly Uninstaller")>
 <Assembly: AssemblyCopyright("Copyright ©  2016")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("3a489476-50ae-4ca4-a430-174be3243d45")>
+<Assembly: Guid("f4c3a1da-7755-4ea3-9ebf-46e8f98c9bfb")>
 
 ' Version information for an assembly consists of the following four values:
 '
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.2.0")>
+<Assembly: AssemblyVersion("1.0.0.0")>
 <Assembly: AssemblyFileVersion("1.0.0.0")>

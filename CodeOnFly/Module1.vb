@@ -1,34 +1,65 @@
 ﻿Module Module1
 
+    Const DivisorPosition As Integer = 21
+
+    Sub WriteDivisor(Optional part As Integer = 0)
+        For i As Integer = 0 To Console.WindowWidth - 1
+            If i = DivisorPosition Then
+                If part = 0 Then
+                    Console.Write("┼")
+                ElseIf part = 1 Then
+                    Console.Write("┬")
+                ElseIf part = 2 Then
+                    Console.Write("┴")
+                End If
+            Else
+                Console.Write("─")
+            End If
+        Next
+    End Sub
+
     Public Sub ShowHeader()
         Console.WriteLine("Bitgate CodeOnFly .NET Compiler [version " & My.Application.Info.Version.ToString & "]")
         Console.WriteLine("Running on a " & If(Environment.Is64BitOperatingSystem, "64-bits", "32-bits") & " " & My.Computer.Info.OSFullName & "[Build " & New Version(My.Computer.Info.OSVersion).Build & "]")
         Console.WriteLine()
         Console.WriteLine("Options:")
         Console.ForegroundColor = ConsoleColor.Gray
-        Console.WriteLine("Syntax                Description")
-        Console.WriteLine("===================== =========================================================")
-        Console.WriteLine("-l <language>         Specifies the programming language to be used in the compiler.")
-        Console.ForegroundColor = ConsoleColor.DarkGray
-        Console.WriteLine("  -l 1                Visual Basic .NET")
-        Console.WriteLine("  -l 2                Visual C-Sharp")
-        Console.ForegroundColor = ConsoleColor.Gray
-        Console.WriteLine("-f <filepath>         Passes a code file to the compiler.")
-        Console.WriteLine("-h <filepath>         Passes a reference file to the compiler.")
-        Console.WriteLine("-p <filepath>         Load an CodeOnFly header file to the compiler.")
-        Console.WriteLine("-e <class>            Specifies the entry class.")
-        Console.WriteLine("-m <method name>      Specifies the entry method (if -out is enabled, this command will")
-        Console.WriteLine("                      be ignored).")
-        Console.WriteLine("-n                    Indicates that the entry method is static.")
-        Console.WriteLine("-s                    Suspends the pause after the execution (only with -r).")
-        Console.WriteLine("-out <filepath>       Specifies the output assembly file. Leaves it blank to don't")
-        Console.WriteLine("                      compile an assembly.")
-        Console.WriteLine("-r                    Run the application after compilation using the 'Program.Main' method.")
-        Console.ForegroundColor = ConsoleColor.Gray
-        Console.WriteLine("-a <value>            Pass one or more arguments to the method in which will be started.")
-        Console.WriteLine("-ver                  Shows the CodeOnFly version.")
-        Console.WriteLine("-i                    Starts interactive mode (if available).")
-        Console.WriteLine("-i <expression>       Evaluate an expression..")
+        Console.WriteLine(" Syntax                Description")
+        WriteDivisor(1)
+        Console.WriteLine(" -l <language>       │ Specifies the programming language to be used in the compiler.   ")
+        Console.WriteLine("   -l 1              │ Visual Basic .NET                                                ")
+        Console.WriteLine("   -l 2              │ Visual C-Sharp                                                   ")
+        Console.WriteLine("   -l 3              │ Visual Basic .NET (Roslyn)                                       ")
+        Console.WriteLine("   -l 4              │ Visual C-Sharp .NET (Roslyn)                                     ")
+        WriteDivisor()
+        Console.WriteLine(" -f <filepath>       │ Passes a code file to the compiler.                              ")
+        WriteDivisor()
+        Console.WriteLine(" -h <filepath>       │ Passes a reference file to the compiler.                         ")
+        WriteDivisor()
+        Console.WriteLine(" -p <filepath>       │ Load an CodeOnFly header file to the compiler.                   ")
+        WriteDivisor()
+        Console.WriteLine(" -e <class>          │ Specifies the entry class.                                       ")
+        WriteDivisor()
+        Console.WriteLine(" -m <method name>    │ Specifies the entry method (if -out is enabled, this command will")
+        Console.WriteLine("                     │ be ignored).                                                     ")
+        WriteDivisor()
+        Console.WriteLine(" -n                  │ Indicates that the entry method is static.                       ")
+        WriteDivisor()
+        Console.WriteLine(" -s                  │ Suspends the pause after the execution (only with -r).           ")
+        WriteDivisor()
+        Console.WriteLine(" -out <filepath>     │ Specifies the output assembly file. Leaves it blank to don't     ")
+        Console.WriteLine("                     │ compile an assembly.                                             ")
+        WriteDivisor()
+        Console.WriteLine(" -r                  │ Run the application after compilation using the entry method.    ")
+        WriteDivisor()
+        Console.WriteLine(" -a <value>          │ Pass one or more arguments to the method in which will be started")
+        WriteDivisor()
+        Console.WriteLine(" -ver                │ Shows the CodeOnFly version.                                     ")
+        WriteDivisor()
+        Console.WriteLine(" -i                  │ Starts interactive mode (if available).                          ")
+        WriteDivisor()
+        Console.WriteLine(" -i <expression>     │ Evaluate an expression.                                          ")
+        WriteDivisor(2)
     End Sub
 
 #Region "Arguments variables"
@@ -53,8 +84,12 @@
 
     Sub Terminate(message As String, errorCode As Integer)
         Console.WriteLine($"Error [{errorCode}]: " & message)
+#If RELEASE Then
         Environment.Exit(errorCode)
         End
+#Else
+        Console.ReadLine()
+#End If
     End Sub
 
     Sub Warn(message As String)
@@ -102,6 +137,12 @@
                                     _language = Core.ProgrammingLanguage.VisualBasic
                                 Case 2
                                     _language = Core.ProgrammingLanguage.VisualCSharp
+                                Case 3
+                                    _language = Core.ProgrammingLanguage.VisualBasicRoslym
+                                Case 4
+                                    _language = Core.ProgrammingLanguage.VisualCSharpRoslym
+                                Case Else
+                                    Terminate("Invalid language.", 35)
                             End Select
                         End If
                     Case "-f"
@@ -212,7 +253,7 @@
             '---------- compiler
             Dim gen As Core.Generator
             If (_load <> Nothing) Then
-                gen = Header.Parser.Parse(IO.File.ReadAllText(_load))
+                gen = Header.Parser.Parse(IO.File.ReadAllText(_load), _load)
             Else
                 gen = New Core.Generator(_language)
             End If
@@ -225,8 +266,8 @@
                 gen.References = _references.ToArray
                 gen.Entry = _entry
                 gen.SourceCodes = fileArray.ToArray
-                gen.ThrowOnFailedBuild = False
             End If
+            gen.ThrowOnFailedBuild = False
             If _r Then
                 Console.Clear()
                 If _out = Nothing Then
@@ -234,7 +275,6 @@
                     If k.Successful = False Then
                         Console.WriteLine("There were build errors, aborting the execution.")
                         Console.WriteLine()
-
                         For i As Integer = 0 To k.Errors.Count - 1 Step +1
                             Dim err = k.Errors(i)
                             If err.IsWarning Then Continue For
@@ -337,6 +377,9 @@
                 End If
             End If
         End If
+#If DEBUG Then
+        Console.ReadLine()
+#End If
     End Sub
 
 End Module

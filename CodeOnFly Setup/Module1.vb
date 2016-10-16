@@ -4,10 +4,9 @@ Imports System.Security.Principal
 Imports System.Text
 Imports Microsoft.Win32
 
-Module Module1
+Public Module Module1
 
-    ReadOnly FilesToInstall As String() = {"interactive.exe", "CodeOnFly.Core.dll", "Serializer.dll", "CodeOnFly.exe", "Setup.exe", "CodeOnFly.Header.dll"}
-    ReadOnly WhereToInstall As String = "C:\CodeOnFly\"
+    Public ReadOnly WhereToInstall As String = "C:\CodeOnFly\"
 
     Sub WriteOnCenter(ByVal txt As String)
         Console.WriteLine(Space(Console.WindowWidth / 2 - (txt.Length / 2)) & txt)
@@ -17,12 +16,13 @@ Module Module1
         Console.BackgroundColor = ConsoleColor.DarkBlue
         Console.Clear()
         Console.WriteLine()
-        WriteOnCenter("######################################################")
-        WriteOnCenter("#                 CodeOnFly Installer                #")
-        WriteOnCenter("#                     version 1.0                    #")
-        WriteOnCenter("#                                                    #")
-        WriteOnCenter("#                      by BitGate                    #")
-        WriteOnCenter("######################################################")
+        WriteOnCenter("╔════════════════════════════════════════════════════╗")
+        WriteOnCenter("║                 CodeOnFly Installer                ║")
+        WriteOnCenter($"║                      version {My.Application.Info.Version.Major.ToString.ToCharArray()(0) & "." & My.Application.Info.Version.Minor.ToString.ToCharArray()(0)}                   ║")
+        WriteOnCenter(String.Format("║                        SDK {0,3}                     ║", My.Application.Info.Version.Build))
+        WriteOnCenter("╟────────────────────────────────────────────────────╢")
+        WriteOnCenter("║                      by BitGate                    ║")
+        WriteOnCenter("╚════════════════════════════════════════════════════╝")
         Console.WriteLine()
         Console.WriteLine("CodeOnFly Installer")
         Console.WriteLine("This wizards installs CodeOnFly in this computer, so you can launch")
@@ -37,6 +37,7 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.White
         ' ----------------------------------------------------------
 
+#If Not DEBUG Then
         If Not UacHelper.IsProcessElevated Then
             Console.WriteLine("[!] Installation aborted.")
             Console.WriteLine("Start this application in elevated mode to install the aplication.")
@@ -48,34 +49,52 @@ Module Module1
             Console.WriteLine("Press any key to install. . .")
             Console.ReadKey()
         End If
+#End If
 
         ' ----------------------------------------------------------
 
+        Dim myDir = IO.Path.GetDirectoryName(Reflection.Assembly.GetExecutingAssembly.Location) & "\"
         Console.Clear()
         If Not IO.Directory.Exists(WhereToInstall) Then
             IO.Directory.CreateDirectory(WhereToInstall)
         End If
-        For i As Integer = 0 To FilesToInstall.Count - 1
-            Dim file As String = IO.Directory.GetCurrentDirectory & "\" & FilesToInstall(i)
-            If Not IO.File.Exists(file) Then
-                Console.WriteLine("Error in the installation: File '" & IO.Path.GetFileName(file) & "' is not present.")
-                Console.WriteLine("Press any key to exit. . .")
-                Console.ReadKey()
-                End
+        If Not IO.Directory.Exists(myDir & "install") Then
+            Console.WriteLine("Internal install directory not found.")
+            Console.ReadKey()
+            End
+        End If
+        Dim allFiles = IO.Directory.GetFiles(myDir & "install", "*", IO.SearchOption.AllDirectories)
+        For f As Integer = 0 To allFiles.Count - 1
+            Dim file As String = allFiles(f)
+            Dim insideDir As String = file.Substring((myDir & "install\").Length)
+            Dim output As String = ""
+            If insideDir.Contains("\") Then
+                Dim outDir As String = (WhereToInstall & (insideDir.Substring(0, insideDir.LastIndexOf("\") + 1)))
+                output = (outDir & IO.Path.GetFileName(file))
+                If Not IO.Directory.Exists(outDir) Then
+                    IO.Directory.CreateDirectory(outDir)
+                End If
             Else
-                Console.WriteLine("Copying files... " & Math.Round((i / FilesToInstall.Count) * 100) & "%")
-                IO.File.Copy(file, WhereToInstall & IO.Path.GetFileName(file), True)
+                output = WhereToInstall & IO.Path.GetFileName(file)
             End If
-            Threading.Thread.Sleep(New Random().Next(250, 1800))
+            Console.WriteLine("Copying files... " & Math.Round((f / allFiles.Count) * 100) & "%")
+            IO.File.Copy(file, output, True)
         Next
 
         ' ----------------------------------------------------------
 
         Console.WriteLine("Creating path variables...")
         Process.Start("cmd", $"/c setx PATH ""{WhereToInstall};%path%;"" -m")
+
         Console.WriteLine("Creating associations...")
-        FileAssociation.CreateFileAssociation(".vbr", "VisualBasicCodeOnFlyScript", "Visual Basic CodeOnFly auto-run script", WhereToInstall & "CodeOnFly.exe", " -l 1 -f ""%1"" -r")
-        FileAssociation.CreateFileAssociation(".csr", "CSharpCodeOnFlyScript", "C# CodeOnFly auto-run script", WhereToInstall & "CodeOnFly.exe", " -l 2 -f ""%1"" -r")
+        FileAssociation.CreateFileAssociation(".vbr", "VisualBasicCodeOnFlyScript", "Visual Basic CodeOnFly auto-run script", WhereToInstall & "CodeOnFly.exe", " -l 1 -f ""%1"" -r -s")
+        FileAssociation.CreateFileAssociation(".csr", "CSharpCodeOnFlyScript", "C# CodeOnFly auto-run script", WhereToInstall & "CodeOnFly.exe", " -l 2 -f ""%1"" -r -s")
+        FileAssociation.CreateFileAssociation(".vbr2", "VisualBasicRoslynCodeOnFlyScript", "Visual Basic Roslyn CodeOnFly auto-run script", WhereToInstall & "CodeOnFly.exe", " -l 3 -f ""%1"" -r -s")
+        FileAssociation.CreateFileAssociation(".csr2", "CSharpRoslynCodeOnFlyScript", "C# Roslyn CodeOnFly auto-run script", WhereToInstall & "CodeOnFly.exe", " -l 4 -f ""%1"" -r -s")
+        FileAssociation.CreateFileAssociation(".cfh", "CodeOnFlyHeader", "CodeOnFly auto-run header", WhereToInstall & "CodeOnFly.exe", " -p ""%1"" -r -s")
+
+        Console.WriteLine("Creating an uninstall entry...")
+        ProgramSettings.MakeUninstallable()
 
         ' ----------------------------------------------------------
 
@@ -89,27 +108,42 @@ Module Module1
     End Sub
 End Module
 
-'=======================================================
-'Service provided by Telerik (www.telerik.com)
-'Conversion powered by NRefactory.
-'Twitter: @telerik
-'Facebook: facebook.com/telerik
-'=======================================================
+Public NotInheritable Class ProgramSettings
+    Shared Sub MakeUninstallable()
+        'Setting My Values
+        Dim ApplicationName As String = "CodeOnFly"
+        Dim ApplicationVersion As String = My.Application.Info.Version.ToString
+        Dim ApplicationIconPath As String = ""
+        Dim ApplicationPublisher As String = "BitGate S.O."
+        Dim ApplicationUnInstallPath As String = WhereToInstall & "Uninstall.exe"
+        Dim ApplicationInstallDirectory As String = WhereToInstall
 
+        ' thanks to http://stackoverflow.com/questions/17993319/how-to-add-my-program-to-add-remove-programs-vb-net
+
+        'Openeing the Uninstall RegistryKey (don't forget to set the writable flag to true)
+        With My.Computer.Registry.LocalMachine.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Uninstall", True)
+
+            'Creating my AppRegistryKey
+            Dim AppKey As Microsoft.Win32.RegistryKey = .CreateSubKey(ApplicationName)
+
+            'Adding my values to my AppRegistryKey
+            AppKey.SetValue("DisplayName", ApplicationName, Microsoft.Win32.RegistryValueKind.String)
+            AppKey.SetValue("DisplayVersion", ApplicationVersion, Microsoft.Win32.RegistryValueKind.String)
+            AppKey.SetValue("DisplayIcon", ApplicationIconPath, Microsoft.Win32.RegistryValueKind.String)
+            AppKey.SetValue("Publisher", ApplicationPublisher, Microsoft.Win32.RegistryValueKind.String)
+            AppKey.SetValue("UninstallString", ApplicationUnInstallPath, Microsoft.Win32.RegistryValueKind.String)
+            AppKey.SetValue("UninstallPath", ApplicationUnInstallPath, Microsoft.Win32.RegistryValueKind.String)
+            AppKey.SetValue("InstallLocation", ApplicationInstallDirectory, Microsoft.Win32.RegistryValueKind.String)
+
+        End With
+    End Sub
+End Class
 
 Public NotInheritable Class FileAssociation
     <System.Runtime.InteropServices.DllImport("shell32.dll")> Shared Sub _
     SHChangeNotify(ByVal wEventId As Integer, ByVal uFlags As Integer,
     ByVal dwItem1 As Integer, ByVal dwItem2 As Integer)
     End Sub
-
-
-    ' Create the new file association
-    '
-    ' Extension is the extension to be registered (eg ".cad"
-    ' ClassName is the name of the associated class (eg "CADDoc")
-    ' Description is the textual description (eg "CAD Document"
-    ' ExeProgram is the app that manages that extension (eg "c:\Cad\MyCad.exe")
 
     Shared Function CreateFileAssociation(ByVal extension As String,
     ByVal className As String, ByVal description As String,

@@ -1,6 +1,5 @@
 ﻿
 Imports System.CodeDom
-
 Friend NotInheritable Class Internal
 
     Friend mg As Generator
@@ -32,7 +31,12 @@ Friend NotInheritable Class Internal
         K.GenerateInMemory = True
         K.IncludeDebugInformation = False
         K.ReferencedAssemblies.AddRange(mg.References)
-        K.MainClass = mg.Entry
+
+        If Generator.IsValidName(mg.Entry, True) Then
+            K.MainClass = mg.Entry
+        Else
+            Throw New Exception("Invalid name: " & mg.Entry)
+        End If
 
         '-----------------------------------------------------------
 
@@ -42,6 +46,10 @@ Friend NotInheritable Class Internal
                 generated = New Microsoft.VisualBasic.VBCodeProvider().CompileAssemblyFromSource(K, mg.SourceCodes)
             Case ProgrammingLanguage.VisualCSharp
                 generated = New Microsoft.CSharp.CSharpCodeProvider().CompileAssemblyFromSource(K, mg.SourceCodes)
+            Case ProgrammingLanguage.VisualBasicRoslym
+                generated = New Microsoft.CodeDom.Providers.DotNetCompilerPlatform.VBCodeProvider().CompileAssemblyFromSource(K, mg.SourceCodes)
+            Case ProgrammingLanguage.VisualCSharpRoslym
+                generated = New Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider().CompileAssemblyFromSource(K, mg.SourceCodes)
         End Select
 
         '-----------------------------------------------------------
